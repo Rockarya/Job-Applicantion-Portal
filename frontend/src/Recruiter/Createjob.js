@@ -89,7 +89,7 @@ export default function CreateJob() {
         .then(res => {
             // console.log(res);
             alert("Created job " + res.data.title);
-            history.push('/rdashboard');
+            history.push('/activejob');
         })
         .catch(function (error) {
             // alert(error);

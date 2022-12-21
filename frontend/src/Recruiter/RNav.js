@@ -19,8 +19,8 @@ function RNav() {
                 <Link style={navstyle} to='/activejob'>
                     <li>Active Jobs</li>
                 </Link>
-                <Link style={navstyle} to='/rdashboard'>
-                    <li>Dashboard</li>
+                <Link style={navstyle} to='/acceptedapplicants'>
+                    <li>Accepted Applicants</li>
                 </Link>
                 <Link style={navstyle} to='/rprofile' >   
                     <li>Profile</li>

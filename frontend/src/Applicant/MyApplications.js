@@ -7,12 +7,6 @@ export default function MyApplications() {
     const history = useHistory();
     const [job, setjobs] = useState([]);
 
-    const fetchUsers = async (id) => {
-        const data = await fetch(`http://localhost:4000/jobs/${id}/applicants/alljobs`);
-        const jobs = await data.json();
-        setjobs(jobs);
-    };
-
     useEffect(() => {
         const loggedInUser = localStorage.getItem("user");
         if (!loggedInUser) {
@@ -23,6 +17,33 @@ export default function MyApplications() {
             fetchUsers(foundUser._id);
         }
     }, []);
+
+    const fetchUsers = async (id) => {
+        const data = await fetch(`http://localhost:4000/jobs/${id}/applicants/alljobs`);
+        const json_data = await data.json();
+        settingJobParams(json_data);
+    };
+
+    const settingJobParams = (data) => {
+        var jobParams = [];
+
+        for(let status in data) {
+            for(let i=0;i<data[status].length;i++) {
+                const val = data[status][i];
+                var params = {
+                    "title" : val.title,
+                    "salary": val.salary,
+                    "name" : val.name,
+                    "rating" : val.rating,
+                    "status" : status
+                }
+                jobParams.push(params);
+            }
+        }
+
+        setjobs(jobParams);
+    };
+
 
     return (
         <div class="table-responsive">
@@ -37,6 +58,7 @@ export default function MyApplications() {
                         <th scope="col">Salary</th>
                         <th scope="col">Name of Recruiter</th>
                         <th scope="col">Rating</th>
+                        <th scope="col">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,6 +69,7 @@ export default function MyApplications() {
                             <td><h3> {val.salary} </h3></td>
                             <td><h3> {val.name} </h3></td>
                             <td><h3> {val.rating} </h3></td>
+                            <td><h3> {val.status} </h3></td>
                         </tr>
                     )}
                 </tbody>

@@ -14,6 +14,7 @@ import Jobdetails from './Recruiter/Jobdetails';
 import Applicantdetails from './Recruiter/Applicantdetails';
 import MyApplications from './Applicant/MyApplications';
 import SOP from './Applicant/SOP';
+import AcceptedApplicants from './Recruiter/AcceptedApplicants';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
       <Route path="/applicant" exact component={Applicant}/>
       <Route path="/recruiter" exact component={Recruiter}/>
       <Route path="/adashboard" exact component={ADashboard}/>
+      <Route path="/acceptedapplicants" exact component={AcceptedApplicants}/>
       <Route path="/rprofile" exact component={RProfile}/>
       <Route path="/aprofile" exact component={AProfile}/>
       <Route path="/createjob" exact component={Createjob}/>

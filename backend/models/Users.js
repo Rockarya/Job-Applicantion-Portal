@@ -51,8 +51,9 @@ const UserSchema = new Schema({
 		required: false
 	},
 	rating: {
-		type: String,
-		required: false
+		type: Number,
+		required: false,
+		default: 2
 	},
 	jobids: {
 		type: [String],

@@ -9,6 +9,7 @@ import TableBody from '@material-ui/core/TableBody';
 import Button from '@material-ui/core/Button';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import { IconButton } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from "react-router-dom";
 import './Recruiter.css';
@@ -30,9 +31,17 @@ export default function ApplicantDetails() {
         }
         else {
             const foundUser = JSON.parse(loggedInUser);
+
             axios.get(`http://localhost:4000/users/alljobs/${params.id}`)
-                .then(response => {
-                    settingParams(response.data);
+                .then(res => {
+                    // getting details about the applied, shortlisted, accepted applicants
+                    axios.get(`http://localhost:4000/jobs/${params.id}`)
+                        .then(response => {
+                            settingParams(res.data, response.data);
+                        })
+                        .catch(function (error) {
+                            //  console.log(error);
+                        })
                 })
                 .catch(function (error) {
                     //  console.log(error);
@@ -40,26 +49,45 @@ export default function ApplicantDetails() {
         }
     }, []);
 
-    const settingParams = (data) => {
+    const settingParams = (applicantData, applicantStatus) => {
         var params_arr = [];
-        for(let i=0;i<data.length;i++)
-        {
+        const appliedStatus = applicantStatus.appliedstatus;
+        const shortlistedStatus = applicantStatus.shortlistedstatus;
+        const acceptedStatus = applicantStatus.acceptedstatus;
+
+        for (let i = 0; i < applicantData.length; i++) {
             var params_dict = {
-                "name" : data[i].name,
-                "skills" : data[i].skills,
-                "education" : data[i].education,
-                "rating" : data[i].rating,
-                "sop" : "" 
+                "_id": applicantData[i]._id,
+                "name": applicantData[i].name,
+                "skills": applicantData[i].skills,
+                "education": applicantData[i].education,
+                "rating": applicantData[i].rating,
+                "sop": "",
+                "status": "",
+                "reject": "Reject"
             };
-            const SOP_arr = data[i].SOP;
-            for(let j=0;j<SOP_arr.length;j++)
-            {
-                if(SOP_arr[j][0] === params.id)
-                {
+
+            // setting SOP of the applicant 
+            const SOP_arr = applicantData[i].SOP;
+            for (let j = 0; j < SOP_arr.length; j++) {
+                if (SOP_arr[j][0] === params.id) {
                     params_dict["sop"] = SOP_arr[j][1];
                     break;
                 }
             }
+
+            // setting the job status of the applicant
+            if (appliedStatus.includes(applicantData[i]._id)) {
+                params_dict["status"] = "Shortlist";
+            }
+            else if (shortlistedStatus.includes(applicantData[i]._id)) {
+                params_dict["status"] = "Accept";
+            }
+            else if (acceptedStatus.includes(applicantData[i]._id)) {
+                params_dict["status"] = "Accepted";
+                params_dict["reject"] = "";
+            }
+
             params_arr.push(params_dict);
         }
         setApplicants(params_arr);
@@ -96,6 +124,42 @@ export default function ApplicantDetails() {
         setRatingTitle(!ratingTitle);
     }
 
+    const onClickStatus = async (event, applicantID, applicantStatus) => {
+        event.preventDefault();
+        if (applicantStatus === "Shortlist") {
+            try {
+                await axios.patch(`http://localhost:4000/jobs/shortlist/${params.id}/${applicantID}`);
+                alert("Applicant Shortlisted");
+                window.location.reload()
+            }
+            catch (err) {
+                // console.log(err);
+            }
+        }
+        else if (applicantStatus === "Accept") {
+            try {
+                await axios.patch(`http://localhost:4000/jobs/accept/${params.id}/${applicantID}`);
+                alert("Applicant Accepted");
+                window.location.reload()
+            }
+            catch (err) {
+                // console.log(err);
+            }
+        }
+    }
+
+    const onClickReject = async (event, applicantID) => {
+        event.preventDefault();
+        try {
+            await axios.patch(`http://localhost:4000/jobs/reject/${params.id}/${applicantID}`);
+            alert("Applicant Rejected");
+            window.location.reload()
+        }
+        catch (err) {
+            // console.log(err);
+        }
+    }
+
     return (
         <div>
             <RNav />
@@ -112,6 +176,8 @@ export default function ApplicantDetails() {
                                     <TableCell> Education</TableCell>
                                     <TableCell> Rating<Button onClick={sortRating}>{ratingTitle ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}</Button></TableCell>
                                     <TableCell> SOP</TableCell>
+                                    <TableCell> Status</TableCell>
+                                    <TableCell> Reject</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -120,10 +186,29 @@ export default function ApplicantDetails() {
                                         <TableRow key={ind}>
                                             <TableCell>{ind + 1}</TableCell>
                                             <TableCell> {val.name}</TableCell>
-                                            <TableCell>{val.skills}</TableCell>
-                                            <TableCell>{val.education}</TableCell>
+                                            <TableCell>{val.skills.join(', ')}</TableCell>
+                                            <TableCell>{
+                                                val.education.length ?
+                                                    <table>
+                                                        <tr key={"header"}>
+                                                            {Object.keys(val.education[0]).map((key) => (
+                                                                <th>{key}</th>
+                                                            ))}
+                                                        </tr>
+                                                        {val.education.map((item) => (
+                                                            <tr key={item.id}>
+                                                                {Object.values(item).map((val) => (
+                                                                    <td>{val}</td>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                    </table>
+                                                    : null
+                                            }</TableCell>
                                             <TableCell>{val.rating}</TableCell>
                                             <TableCell>{val.sop}</TableCell>
+                                            <TableCell><IconButton disabled={val.status === "Accepted" ? true : false} onClick={event => onClickStatus(event, val._id, val.status)}>{val.status}</IconButton></TableCell>
+                                            <TableCell><IconButton onClick={event => onClickReject(event, val._id)}>{val.reject}</IconButton></TableCell>
                                         </TableRow>
                                     ))
                                 }

@@ -39,7 +39,7 @@ export default function ActiveJob() {
             try {
                 await axios.delete(`http://localhost:4000/jobs/${jobID}`);
                 alert("Job Deleted");
-                window. location. reload()
+                window.location.reload()
             }
             catch (err) {
                 // alert(err);

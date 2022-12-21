@@ -65,7 +65,7 @@ router.patch('/applicant/:userId' , async (req,res) => {
     try {
         const updatedapplicant = await User.updateOne(
             {_id : req.params.userId},
-            {$set: {name : req.body.name, email: req.body.email, education: req.body.education, skills: req.body.skills, rating: req.body.rating}}
+            {$set: {name : req.body.name, email: req.body.email, education: req.body.education, skills: req.body.skills}}
         );
         res.json(updatedapplicant);
     }
@@ -74,18 +74,19 @@ router.patch('/applicant/:userId' , async (req,res) => {
     }
 });
 
-// //UPDATE SOP OF AN APPLICANT
-// router.patch('/sop/:userId' , async (req,res) => {
-//     //VALIDATING THE DATA BY HAPI JOI
-//     const { error } = SOPValidation(req.body);
-//     if (error) return res.status(205).send(error.details[0].message);
-    
-//         const updatedsop = await User.updateOne(
-//             {_id : req.params.userId},
-//             {$set: {sop : req.body.sop}}
-//         );
-//         res.status(200).json(updatedsop);
-// });
+//UPDATE RATING OF A USER
+router.patch('/rating/:userId' , async (req,res) => {
+    try {
+        const updatedRating = await User.updateOne(
+            {_id : req.params.userId},
+            {$set: {rating: req.body.rating}}
+        );
+        res.json(updatedRating);
+    }
+    catch (err) {
+        res.json({message : err});
+    }
+});
 
 // GET ALL SOPs FROM HERE FOR A PARTICULAR APPLICANT AND FILTER OUT FOR A PARTICULAR JOB IN FRONTEND
 router.get('/SOP/:applicantId', async (req,res) => {

@@ -72,3 +72,5 @@ after adding nodemon in backend run: npm run start
 -> uploading pdf and images 
 -> sync and async calls
 -> errors in console log for the applicants ko thik krna hai
+-> shortlist and accept by the recruiter krna hai -> done, what to show to applicant and can some fields in model of user and job can be removed
+-> date of joining of accepted applicant

@@ -48,9 +48,8 @@ export default function ADashboard() {
             var jobParams = data[i];
             try {
                 const res = await axios.get(`http://localhost:4000/jobs/${jobParams._id}`);
-                const appliedApplicantIDs = res.data.applicantid;
-                var ind = appliedApplicantIDs.indexOf(id);
-                if (ind !== -1) {
+                const data = res.data;
+                if (data.appliedstatus.indexOf(id) !== -1 || data.shortlistedstatus.indexOf(id) !== -1 || data.acceptedstatus.indexOf(id) !== -1 || data.rejectedstatus.indexOf(id) !== -1) {
                     jobParams["buttonText"] = "Applied";
                 }
                 else {
@@ -81,7 +80,6 @@ export default function ADashboard() {
         setSalaryTitle(!salaryTitle)
     }
 
-    console.log(jobs, 'yahi');
     const sortDuration = () => {
         var array = jobs;
         var flag = durationTitle;
@@ -127,6 +125,8 @@ export default function ADashboard() {
                 });
         }
     };
+
+    console.log(jobs, 'jobs');
 
     return (
         <div>

@@ -51,15 +51,28 @@ const JobSchema = new Schema({
     rating: {
         type: Number,
     },
-    applicantid: {
-        type: [String]
-    },
     recruiterid: {
         type: String,
         required: true
     },
     SOP: {
         type: [Array],
+        required: false
+    },
+    appliedstatus: {
+        type: [String],
+        required: false
+    },
+    shortlistedstatus: {
+        type: [String],
+        required: false
+    },
+    acceptedstatus: {
+        type: [String],
+        required: false
+    },
+    rejectedstatus: {
+        type: [String],
         required: false
     }
 });

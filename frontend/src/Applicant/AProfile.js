@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import ANav from './ANav';
+import Rating from '@mui/material/Rating';
 
 import { MultiSelect } from "@progress/kendo-react-dropdowns";
 const languages = ['C', 'C++', 'Python', 'Javascript', 'C#', 'Java'];
@@ -13,7 +14,7 @@ export default function AProfile() {
     const [email, setEmail] = useState();
     const [education, setEducation] = useState([]);
     const [skills, setSkills] = useState([]);
-    const [rating, setRating] = useState();
+    const [rating, setRating] = useState(0);
     const [user, setUser] = useState();
     const history = useHistory();
 
@@ -121,20 +122,14 @@ export default function AProfile() {
         setSkills(values);
     }
 
-    const onChangeRating = (event) => {
-        setRating(event.target.value);
-    }
-
     const onSubmit = (e) => {
         e.preventDefault();
 
-        var ind = document.getElementById("rating");
         const newUser = {
             name: name,
             email: email,
             education: education,
             skills: skills,
-            rating: ind.options[ind.selectedIndex].value
         }
 
         axios.patch(`http://localhost:4000/users/applicant/${user._id}`, newUser)
@@ -204,16 +199,11 @@ export default function AProfile() {
                     />
                 </div>
 
+                <div>
+                    <h4>Rating:</h4>
+                   <Rating name="simple-controlled" value={rating} readOnly={true}/>
+                </div>
 
-                <h4>Rating</h4>
-                <select id="rating">
-                    <option value="0" >0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3" selected>3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
                 <br />
                 <div className="form-group">
                     <input type="submit" value="Update" className="btn btn-primary" />

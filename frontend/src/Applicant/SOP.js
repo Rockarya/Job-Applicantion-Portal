@@ -28,7 +28,7 @@ export default function SOP() {
     const onSubmit = async (event) => {
         event.preventDefault();
         try {
-            await axios.patch(`http://localhost:4000/jobs/${params.id}/${user._id}`);
+            await axios.patch(`http://localhost:4000/jobs/apply/${params.id}/${user._id}`);
 
             // adding SOP of the applicant
             const SOP_obj = {
