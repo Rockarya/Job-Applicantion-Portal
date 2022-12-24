@@ -11,15 +11,14 @@ export default function Login() {
     const history = useHistory();
     const clientId = '349375385055-b390meppi1hbhe5hj57877l33ohqfov4.apps.googleusercontent.com'
 
-
     useEffect(() => {
-        // const initClient = () => {
-        //     gapi.client.init({
-        //         clientId: clientId,
-        //         scope: ''
-        //     });
-        // };
-        // gapi.load('client:auth2', initClient);
+        const initClient = () => {
+            gapi.client.init({
+                clientId: clientId,
+                scope: ''
+            });
+        };
+        gapi.load('client:auth2', initClient);
 
         const loggedInUser = localStorage.getItem("user");
         if (loggedInUser) {
@@ -37,22 +36,32 @@ export default function Login() {
     }
 
     const onSuccess = (res) => {
-        console.log('success:', res);
-        
+        // console.log('success:', res);
+        axios.post('http://localhost:4000/api/user/gsignin', { email: res.profileObj.email }).then(response => {
+            if (response.status === 200) {
+                setEmail(res.profileObj.email);
+            }
+            else {
+                alert('You are not registered with this email id!');
+                localStorage.setItem("gSignIn", JSON.stringify(res.profileObj));
+                history.push('/register');
+            }
+        })
+            .catch(function (error) {
+                console.log(error);
+            })
     };
 
     const onFailure = (err) => {
-        console.log('failed:', err);
+        // console.log('failed:', err);
     };
 
     const onSubmit = (e) => {
         e.preventDefault();
-
         const newUser = {
             email: email,
             password: password
         }
-
         const loginhere = async () => {
             try {
                 const res = await axios.post('http://localhost:4000/api/user/login', newUser);
@@ -80,7 +89,6 @@ export default function Login() {
                 //  alert(err);
             }
         };
-
         loginhere();
     }
 
@@ -109,14 +117,13 @@ export default function Login() {
                 <h5>Not registered yet!</h5>
                 <a href="http://localhost:3000/register">Register Here</a>
             </form>
-            {/* <GoogleLogin
+            <GoogleLogin
                 clientId={clientId}
                 buttonText="Sign in with Google"
                 onSuccess={onSuccess}
                 onFailure={onFailure}
                 cookiePolicy={'single_host_origin'}
-                isSignedIn={true}
-            /> */}
+            />
         </div>
     )
 }

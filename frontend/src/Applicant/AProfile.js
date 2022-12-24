@@ -3,9 +3,7 @@ import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import ANav from './ANav';
 import Rating from '@mui/material/Rating';
-
 import { MultiSelect } from "@progress/kendo-react-dropdowns";
-const languages = ['C', 'C++', 'Python', 'Javascript', 'C#', 'Java'];
 
 export default function AProfile() {
 
@@ -17,6 +15,7 @@ export default function AProfile() {
     const [rating, setRating] = useState(0);
     const [user, setUser] = useState();
     const history = useHistory();
+    const languages = ['C', 'C++', 'Python', 'Javascript', 'C#', 'Java'];
 
     // uploading pdf
     // const [image, setImage] = useState({ preview: '', data: '' })

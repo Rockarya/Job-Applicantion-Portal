@@ -59,18 +59,10 @@ after adding nodemon in backend run: npm run start
 
 
 
-<!-- EXTRA TO IMPLEMENT -->
--> on changing the url with random shit, on going to other link should also change the browser url shown
--> redirecting to the last page he was visting
-=> saving the option of sorting in myapplications in cookies.
-
 <!-- TO DO -->
--> rating ka chakkar
--> adding use effect login waala hook in each of recruiter files
 -> making some fields mandatory in adding education
 -> removing the cusotm added values in skills -> how?
 -> uploading pdf and images 
 -> sync and async calls
--> errors in console log for the applicants ko thik krna hai
--> shortlist and accept by the recruiter krna hai -> done, what to show to applicant and can some fields in model of user and job can be removed
 -> date of joining of accepted applicant
+-> job applications > job positions

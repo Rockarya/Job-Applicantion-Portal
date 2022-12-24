@@ -232,4 +232,18 @@ router.get('/:applicantId/applicants/alljobs', async (req, res) => {
     }
 });
 
+//UPDATE RATING OF A JOB
+router.patch('/rating/:jobId' , async (req,res) => {
+    try {
+        const updatedRating = await Jobs.updateOne(
+            {_id : req.params.jobId},
+            {$set: {rating: req.body.rating}}
+        );
+        res.json(updatedRating);
+    }
+    catch (err) {
+        res.json({message : err});
+    }
+});
+
 module.exports = router;

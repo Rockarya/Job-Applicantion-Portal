@@ -12,7 +12,6 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 import './Applicant.css';
-import { Link } from 'react-router-dom';
 import ANav from './ANav';
 
 
@@ -36,9 +35,9 @@ export default function ADashboard() {
             axios.get('http://localhost:4000/jobs').then(response => {
                 setJobParams(response.data, foundUser._id);
             })
-                .catch(function (error) {
-                    console.log(error);
-                })
+            .catch(function (error) {
+                console.log(error);
+            })
         }
     }, []);
 
@@ -51,6 +50,10 @@ export default function ADashboard() {
                 const data = res.data;
                 if (data.appliedstatus.indexOf(id) !== -1 || data.shortlistedstatus.indexOf(id) !== -1 || data.acceptedstatus.indexOf(id) !== -1 || data.rejectedstatus.indexOf(id) !== -1) {
                     jobParams["buttonText"] = "Applied";
+                }
+                // a job listing with the maximum number of applications reached or positions filled
+                else if (data.applications === (data.appliedstatus.length + data.shortlistedstatus.length + data.acceptedstatus.length + data.rejectedstatus.length) || data.positions === data.acceptedstatus.length) {
+                    jobParams["buttonText"] = "Full";
                 }
                 else {
                     jobParams["buttonText"] = "Apply";
@@ -126,8 +129,6 @@ export default function ADashboard() {
         }
     };
 
-    console.log(jobs, 'jobs');
-
     return (
         <div>
             <ANav />
@@ -172,7 +173,7 @@ export default function ADashboard() {
                                             <TableCell>{val.rating}</TableCell>
                                             <TableCell>{val.postingdate}</TableCell>
                                             <TableCell>{val.deadline}</TableCell>
-                                            <TableCell><Button onClick={event => onApply(event, val._id, val.buttonText)} disabled={val.buttonText === "Applied" ? true : false}>{val.buttonText}</Button></TableCell>
+                                            <TableCell><Button onClick={event => onApply(event, val._id, val.buttonText)} variant="contained" color={val.buttonText === 'Apply'? 'primary':'secondary'} aria-readonly={val.buttonText === "Full" ? true : false} disabled={val.buttonText === "Applied" ? true : false}>{val.buttonText}</Button></TableCell>
                                         </TableRow>
                                     ))
                                 }

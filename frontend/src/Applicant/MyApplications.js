@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
+import axios from 'axios';
+import Rating from '@mui/material/Rating';
 import ANav from './ANav';
 
 export default function MyApplications() {
@@ -31,6 +33,7 @@ export default function MyApplications() {
             for(let i=0;i<data[status].length;i++) {
                 const val = data[status][i];
                 var params = {
+                    "_id" : val._id,
                     "title" : val.title,
                     "salary": val.salary,
                     "name" : val.name,
@@ -44,21 +47,28 @@ export default function MyApplications() {
         setjobs(jobParams);
     };
 
+    const onChangeRating = (event, newRating, params) => {
+        event.preventDefault();
+        axios.patch(`http://localhost:4000/jobs/rating/${params._id}`,{rating: newRating});
+        alert(`Rated Job ${params.title} with ${newRating} stars`);
+        window.location.reload();
+    }
+
 
     return (
-        <div class="table-responsive">
+        <div className="table-responsive">
             <ANav />
             <h1>These are the list of jobs you applied for</h1>
             <h3>Wait till recruiter finds your profile interesting ;-))</h3>
-            <table class="table">
-                <thead class="thead-dark">
+            <table className="table">
+                <thead className="thead-dark">
                     <tr>
                         <th scope="col">S. No.</th>
                         <th scope="col">Title</th>
                         <th scope="col">Salary</th>
                         <th scope="col">Name of Recruiter</th>
-                        <th scope="col">Rating</th>
                         <th scope="col">Status</th>
+                        <th scope="col">Rating</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,8 +78,12 @@ export default function MyApplications() {
                             <td><h3> {val.title} </h3></td>
                             <td><h3> {val.salary} </h3></td>
                             <td><h3> {val.name} </h3></td>
-                            <td><h3> {val.rating} </h3></td>
                             <td><h3> {val.status} </h3></td>
+                            <td>
+                                {val.status==="accepted"?
+                                <Rating name="simple-controlled" value={val.rating} onChange={(event, newValue) => onChangeRating(event, newValue, val)}/>    
+                                :<Rating name="simple-controlled" value={val.rating} readOnly={true}/>} 
+                            </td>
                         </tr>
                     )}
                 </tbody>

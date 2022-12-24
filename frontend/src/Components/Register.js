@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
+import { GoogleLogin } from 'react-google-login';
+import { gapi } from 'gapi-script';
 
 export default function Register() {
 
@@ -8,20 +10,28 @@ export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const history = useHistory();
+    const clientId = '349375385055-b390meppi1hbhe5hj57877l33ohqfov4.apps.googleusercontent.com';
 
     useEffect(() => {
-        // const initClient = () => {
-        //     gapi.client.init({
-        //         clientId: clientId,
-        //         scope: ''
-        //     });
-        // };
-        // gapi.load('client:auth2', initClient);
+        const initClient = () => {
+            gapi.client.init({
+                clientId: clientId,
+                scope: ''
+            });
+        };
+        gapi.load('client:auth2', initClient);
 
         const loggedInUser = localStorage.getItem("user");
         if (loggedInUser) {
             const foundUser = JSON.parse(loggedInUser);
             history.push(`/${foundUser.role}`);
+        }
+
+        const gSignInUser = localStorage.getItem("gSignIn");
+        if (gSignInUser) {
+            const parsedUser = JSON.parse(gSignInUser);
+            setName(parsedUser.name);
+            setEmail(parsedUser.email);
         }
     }, []);
 
@@ -36,6 +46,16 @@ export default function Register() {
     const onChangePassword = (event) => {
         setPassword(event.target.value);
     }
+
+    const onSuccess = (res) => {
+        // console.log('success:', res);
+        setName(res.profileObj.name);
+        setEmail(res.profileObj.email);
+    };
+
+    const onFailure = (err) => {
+        // console.log('failed:', err);
+    };
 
     const onSubmit = (e) => {
         e.preventDefault();
@@ -110,6 +130,15 @@ export default function Register() {
                 <h5>Already registered!</h5>
                 <a href="http://localhost:3000/login">Login Here</a>
             </form>
+
+            <GoogleLogin
+                clientId={clientId}
+                buttonText="Sign in with Google"
+                onSuccess={onSuccess}
+                onFailure={onFailure}
+                cookiePolicy={'single_host_origin'}
+            />
+
         </div>
     )
 }

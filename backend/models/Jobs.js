@@ -50,6 +50,7 @@ const JobSchema = new Schema({
     },
     rating: {
         type: Number,
+        default: 2
     },
     recruiterid: {
         type: String,

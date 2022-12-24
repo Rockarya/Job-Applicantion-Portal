@@ -29,7 +29,6 @@ var testAPIRouter = require("./routes/testAPI");
 var JobRouter = require("./routes/Jobs");
 var UserRouter = require("./routes/Users");
 var AuthRouter = require("./routes/Auths");
-var IDRouter = require("./routes/ID");
 
 //MiddleWare
 // setup API endpoints-The same folders will be created
@@ -40,7 +39,6 @@ app.use("/testAPI", testAPIRouter);
 app.use("/jobs", JobRouter);
 app.use("/users", UserRouter);
 app.use("/api/user", AuthRouter);
-app.use("/ids", IDRouter);
 
 // Connection to MongoDB    :-By this most probably data is stored somewhere
 mongoose.connect('mongodb://127.0.0.1:27017/' + DB_NAME, { useNewUrlParser: true, useUnifiedTopology: true });

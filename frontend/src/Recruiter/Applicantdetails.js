@@ -12,6 +12,7 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { IconButton } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from "react-router-dom";
+import Rating from '@mui/material/Rating';
 import './Recruiter.css';
 import RNav from './RNav';
 
@@ -205,7 +206,7 @@ export default function ApplicantDetails() {
                                                     </table>
                                                     : null
                                             }</TableCell>
-                                            <TableCell>{val.rating}</TableCell>
+                                            <TableCell><Rating name="simple-controlled" value={val.rating} readOnly={true}/></TableCell>
                                             <TableCell>{val.sop}</TableCell>
                                             <TableCell><IconButton disabled={val.status === "Accepted" ? true : false} onClick={event => onClickStatus(event, val._id, val.status)}>{val.status}</IconButton></TableCell>
                                             <TableCell><IconButton onClick={event => onClickReject(event, val._id)}>{val.reject}</IconButton></TableCell>

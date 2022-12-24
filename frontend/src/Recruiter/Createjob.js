@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import RNav from './RNav';
+import { MultiSelect } from "@progress/kendo-react-dropdowns";
 
 export default function CreateJob() {
 
@@ -16,9 +17,10 @@ export default function CreateJob() {
     const [jobType, setJobType] = useState('');
     const [duration, setDuration] = useState(null);
     const [salary, setSalary] = useState(null);
-    const [rating, setRating] = useState(null);
     const [user, setUser] = useState();
     const history = useHistory();
+    const languages = ['C', 'C++', 'Python', 'Javascript', 'C#', 'Java'];
+
 
     useEffect(() => {
         const loggedInUser = localStorage.getItem("user");
@@ -54,7 +56,16 @@ export default function CreateJob() {
     }
 
     const onChangeSkills = (event) => {
-        setSkills(event.target.value);
+        const values = event.target.value;
+        const lastItem = values[values.length - 1];
+        if (lastItem) {
+            values.pop();
+            const sameItem = values.find((value) => value === lastItem);
+            if (sameItem === undefined) {
+                values.push(lastItem);
+            }
+        }
+        setSkills(values);
     }
 
     const onChangeSalary = (event) => {
@@ -165,11 +176,12 @@ export default function CreateJob() {
                 </div>
 
                 <div className="form-group">
-                    <label>Skills: </label>
-                    <input type="text"
-                        className="form-control"
-                        value={skills}
+                    Skills: {JSON.stringify(skills)}
+                    <MultiSelect
+                        data={languages}
                         onChange={onChangeSkills}
+                        value={skills}
+                        allowCustom={true}
                     />
                 </div>
 

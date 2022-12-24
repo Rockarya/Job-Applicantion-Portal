@@ -1,5 +1,4 @@
 import React from 'react';
-import Home from './Components/Home';
 import Login from './Components/Login';
 import Logout from './Components/Logout';
 import Register from './Components/Register';
@@ -22,7 +21,7 @@ function App() {
     <Router>
     <div className="App">
       <Switch>
-      <Route path="/" exact component={Home}/>
+      <Route path="/" exact component={Login}/>
       <Route path="/login" exact component={Login}/>
       <Route path="/logout" exact component={Logout}/>
       <Route path="/register" exact component={Register}/>
