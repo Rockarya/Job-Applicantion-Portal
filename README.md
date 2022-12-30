@@ -1,5 +1,6 @@
 # BASIC OVERVIEW:
 
+
 Job Application Portal is a web application build using REST principles build using MERN stack:
 
 ● React.js for Frontend
