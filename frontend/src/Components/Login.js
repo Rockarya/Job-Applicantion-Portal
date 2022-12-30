@@ -3,13 +3,13 @@ import axios from 'axios';
 import { useHistory } from "react-router-dom";
 import { GoogleLogin } from 'react-google-login';
 import { gapi } from 'gapi-script';
+import clientId  from './OAuthWebClientID';
 
 export default function Login() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const history = useHistory();
-    const clientId = '349375385055-b390meppi1hbhe5hj57877l33ohqfov4.apps.googleusercontent.com'
 
     useEffect(() => {
         const initClient = () => {
@@ -96,19 +96,23 @@ export default function Login() {
         <div>
             <form onSubmit={onSubmit}>
                 <div className="form-group">
-                    <label>Email: </label>
+                    <label>Email*  : </label>
                     <input type="text"
                         className="form-control"
                         value={email}
                         onChange={onChangeEmail}
+                        required={true}
+                        placeholder={"enter your email id"}
                     />
                 </div>
                 <div className="form-group">
-                    <label>Password: </label>
+                    <label>Password*  : </label>
                     <input type="password"
                         className="form-control"
                         value={password}
                         onChange={onChangePassword}
+                        required={true}
+                        placeholder={"enter your password"}
                     />
                 </div>
                 <div className="form-group">
@@ -117,6 +121,7 @@ export default function Login() {
                 <h5>Not registered yet!</h5>
                 <a href="http://localhost:3000/register">Register Here</a>
             </form>
+            <br/>
             <GoogleLogin
                 clientId={clientId}
                 buttonText="Sign in with Google"

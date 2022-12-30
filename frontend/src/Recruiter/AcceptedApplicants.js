@@ -29,6 +29,24 @@ export default function AcceptedApplicants() {
         }
     }, []);
 
+    const formatDate = (inputDate) => {
+        let date, month, year;
+
+        date = inputDate.getDate();
+        month = inputDate.getMonth() + 1;
+        year = inputDate.getFullYear();
+
+        date = date
+            .toString()
+            .padStart(2, '0');
+
+        month = month
+            .toString()
+            .padStart(2, '0');
+
+        return `${date}/${month}/${year}`;
+    }
+
     const settingApplicantParams = async (recruiterID) => {
         var params_arr = [];
         var user_map = {};
@@ -51,7 +69,7 @@ export default function AcceptedApplicants() {
                         var params = {
                             "_id" : key,
                             "applicantID": applicantID,
-                            "date": jobs_arr[i].deadline,
+                            "date": formatDate(new Date()),
                             "name": user_map[applicantID].name,
                             "rating": user_map[applicantID].rating,
                             "jobtype": jobs_arr[i].jobtype,

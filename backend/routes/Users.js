@@ -65,7 +65,7 @@ router.patch('/applicant/:userId' , async (req,res) => {
     try {
         const updatedapplicant = await User.updateOne(
             {_id : req.params.userId},
-            {$set: {name : req.body.name, email: req.body.email, education: req.body.education, skills: req.body.skills}}
+            {$set: {name : req.body.name, email: req.body.email, profileImgURL: req.body.profileImgURL, resumeURL:req.body.resumeURL, education: req.body.education, skills: req.body.skills}}
         );
         res.json(updatedapplicant);
     }

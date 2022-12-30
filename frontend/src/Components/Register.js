@@ -3,14 +3,15 @@ import axios from 'axios';
 import { useHistory, useParams } from "react-router-dom";
 import { GoogleLogin } from 'react-google-login';
 import { gapi } from 'gapi-script';
+import clientId  from './OAuthWebClientID';
 
 export default function Register() {
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [profileImgURL, setProfileImgURL] = useState('');
     const history = useHistory();
-    const clientId = '349375385055-b390meppi1hbhe5hj57877l33ohqfov4.apps.googleusercontent.com';
 
     useEffect(() => {
         const initClient = () => {
@@ -32,6 +33,7 @@ export default function Register() {
             const parsedUser = JSON.parse(gSignInUser);
             setName(parsedUser.name);
             setEmail(parsedUser.email);
+            setProfileImgURL(parsedUser.imageUrl)
         }
     }, []);
 
@@ -48,9 +50,10 @@ export default function Register() {
     }
 
     const onSuccess = (res) => {
-        // console.log('success:', res);
+        console.log('success:', res);
         setName(res.profileObj.name);
         setEmail(res.profileObj.email);
+        setProfileImgURL(res.profileObj.imageUrl);
     };
 
     const onFailure = (err) => {
@@ -65,9 +68,11 @@ export default function Register() {
             name: name,
             email: email,
             password: password,
-            role: ind.options[ind.selectedIndex].value
+            role: ind.options[ind.selectedIndex].value,
+            profileImgURL: profileImgURL
         }
 
+        console.log(newUser, 'check');
         const registerhere = async () => {
             try {
                 const res = await axios.post('http://localhost:4000/api/user/register', newUser);
@@ -94,27 +99,33 @@ export default function Register() {
         <div>
             <form onSubmit={onSubmit}>
                 <div className="form-group">
-                    <label>Name: </label>
+                    <label>Name*  : </label>
                     <input type="text"
                         className="form-control"
                         value={name}
                         onChange={onChangeName}
+                        required={true}
+                        placeholder={"enter name here"}
                     />
                 </div>
                 <div className="form-group">
-                    <label>Email: </label>
+                    <label>Email*  : </label>
                     <input type="text"
                         className="form-control"
                         value={email}
                         onChange={onChangeEmail}
+                        required={true}
+                        placeholder={"enter email id here"}
                     />
                 </div>
                 <div className="form-group">
-                    <label>Password: </label>
+                    <label>Password*  : </label>
                     <input type="password"
                         className="form-control"
                         value={password}
                         onChange={onChangePassword}
+                        required={true}
+                        placeholder={"enter password here"}
                     />
                 </div>
                 <h4>Select Your Role</h4>
@@ -127,13 +138,13 @@ export default function Register() {
                 <div className="form-group">
                     <input type="submit" value="Register" className="btn btn-primary" />
                 </div>
-                <h5>Already registered!</h5>
-                <a href="http://localhost:3000/login">Login Here</a>
+                <h5>Already registered! <a href="http://localhost:3000/login">Login</a></h5>
             </form>
 
+            <br/>
             <GoogleLogin
                 clientId={clientId}
-                buttonText="Sign in with Google"
+                buttonText="Sign Up with Google"
                 onSuccess={onSuccess}
                 onFailure={onFailure}
                 cookiePolicy={'single_host_origin'}

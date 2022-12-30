@@ -17,6 +17,7 @@ import './Recruiter.css';
 import RNav from './RNav';
 
 
+
 export default function ApplicantDetails() {
 
     const [applicants, setApplicants] = useState([]);
@@ -65,7 +66,8 @@ export default function ApplicantDetails() {
                 "rating": applicantData[i].rating,
                 "sop": "",
                 "status": "",
-                "reject": "Reject"
+                "reject": "Reject",
+                "resumeURL" : applicantData[i].resumeURL
             };
 
             // setting SOP of the applicant 
@@ -161,6 +163,8 @@ export default function ApplicantDetails() {
         }
     }
 
+    console.log(applicants, 'appli');
+
     return (
         <div>
             <RNav />
@@ -177,6 +181,7 @@ export default function ApplicantDetails() {
                                     <TableCell> Education</TableCell>
                                     <TableCell> Rating<Button onClick={sortRating}>{ratingTitle ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}</Button></TableCell>
                                     <TableCell> SOP</TableCell>
+                                    <TableCell> Resume</TableCell>
                                     <TableCell> Status</TableCell>
                                     <TableCell> Reject</TableCell>
                                 </TableRow>
@@ -187,7 +192,7 @@ export default function ApplicantDetails() {
                                         <TableRow key={ind}>
                                             <TableCell>{ind + 1}</TableCell>
                                             <TableCell> {val.name}</TableCell>
-                                            <TableCell>{val.skills.join(', ')}</TableCell>
+                                            <TableCell>{val.skills.map((skill) => skill.name).join(', ')}</TableCell>
                                             <TableCell>{
                                                 val.education.length ?
                                                     <table>
@@ -208,6 +213,7 @@ export default function ApplicantDetails() {
                                             }</TableCell>
                                             <TableCell><Rating name="simple-controlled" value={val.rating} readOnly={true}/></TableCell>
                                             <TableCell>{val.sop}</TableCell>
+                                            <TableCell><p><a href={val.resumeURL} target='_blank'>{val.resumeURL?'Download':'Not Uploaded'}</a></p></TableCell>
                                             <TableCell><IconButton disabled={val.status === "Accepted" ? true : false} onClick={event => onClickStatus(event, val._id, val.status)}>{val.status}</IconButton></TableCell>
                                             <TableCell><IconButton onClick={event => onClickReject(event, val._id)}>{val.reject}</IconButton></TableCell>
                                         </TableRow>

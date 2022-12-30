@@ -51,12 +51,14 @@ export default function SOP() {
             <form onSubmit={onSubmit}>
                 <div className="form-group">
                     <textarea type="text"
-                        placeholder="Statement of Purpose"
+                        placeholder="Statement of Purpose (Max 1000 characters)"
                         rows={10}
                         cols={50}
                         className="form-control"
                         value={SOP}
                         onChange={onChangeSOP}
+                        required={true}
+                        maxLength={1000}   //setting the maximum character length to be 250 words
                     />
                 </div>
 

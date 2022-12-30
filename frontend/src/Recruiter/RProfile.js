@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import RNav from './RNav';
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
 export default function RProfile() {
 
@@ -60,6 +62,7 @@ export default function RProfile() {
             });
             localStorage.setItem('user', JSON.stringify(profile));
             alert("Profile Updated");
+            history.push('/recruiter');
         })
         .catch(function (error) {
             // alert(error);
@@ -89,7 +92,7 @@ export default function RProfile() {
                 </div>
                 <div className="form-group">
                     <label>Contact: </label>
-                    <input type="text"
+                    <input type="number" min={1000000000} max={9999999999}
                         className="form-control"
                         value={contact}
                         onChange={onChangeContact}
@@ -97,10 +100,14 @@ export default function RProfile() {
                 </div>
                 <div className="form-group">
                     <label>Bio: </label>
-                    <input type="text"
+                    <textarea type="text"
+                        placeholder="About You (Max 1000 characters)"
+                        rows={3}
+                        cols={30}
                         className="form-control"
                         value={bio}
                         onChange={onChangeBio}
+                        maxLength={1000}   //setting the maximum character length to be 250 words
                     />
                 </div>
                 <div className="form-group">

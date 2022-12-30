@@ -24,16 +24,15 @@ const JobSchema = new Schema({
         required: true
     },
     postingdate: {
-        type: Date,
-        required: false,
-        default: Date.now
+        type: String,
+        required: true,
     },
     deadline: {             
-        type: Date,
+        type: String,
         required: true 
     },
 	skills: {
-        type: String,
+        type: Array,
         required: true
     },
     jobtype: {

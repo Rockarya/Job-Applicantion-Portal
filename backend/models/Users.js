@@ -8,6 +8,14 @@ const UserSchema = new Schema({
 		required: true,
 		min: 4
 	},
+	profileImgURL: {
+		type: String,
+		required: false
+	},
+	resumeURL: {
+		type: String,
+		required: false
+	},
 	email: {
 		type: String,
 		required: true,
@@ -18,7 +26,7 @@ const UserSchema = new Schema({
 		required: true
 	},
 	contact: {
-		type: String,
+		type: Number,
 		required: false
     },
    bio: {

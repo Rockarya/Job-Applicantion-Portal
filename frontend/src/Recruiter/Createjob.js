@@ -2,25 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import RNav from './RNav';
-import { MultiSelect } from "@progress/kendo-react-dropdowns";
+import Multiselect from 'multiselect-react-dropdown';
 
 export default function CreateJob() {
 
     const [title, setTitle] = useState('');
-    const [name, setName] = useState();
-    const [email, setEmail] = useState();
-    const [applications, setApplications] = useState(null);
-    const [positions, setPositions] = useState(null);
-    const [postingDate, setPostingDate] = useState(Date.now());
-    const [deadline, setDeadline] = useState(null);
-    const [skills, setSkills] = useState('');
-    const [jobType, setJobType] = useState('');
-    const [duration, setDuration] = useState(null);
-    const [salary, setSalary] = useState(null);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [applications, setApplications] = useState();
+    const [positions, setPositions] = useState();
+    const [deadline, setDeadline] = useState('');
+    const [skills, setSkills] = useState([]);
+    const [duration, setDuration] = useState();
+    const [salary, setSalary] = useState();
     const [user, setUser] = useState();
     const history = useHistory();
-    const languages = ['C', 'C++', 'Python', 'Javascript', 'C#', 'Java'];
-
+    var languagesArr = ['C','CSS','C++','C#','Dart','Go','HTML','Java','Javascript','Kotlin','MATLAB','Perl','PHP','Python','R','Ruby','Rust','Scala','Swift','SQL'];
+    var languagesObjectArr = [];
+    for(let i=0;i<languagesArr.length;i++) {
+        languagesObjectArr.push({id: i+1, name: languagesArr[i]});
+    }
 
     useEffect(() => {
         const loggedInUser = localStorage.getItem("user");
@@ -47,25 +48,8 @@ export default function CreateJob() {
         setPositions(event.target.value)
     }
 
-    const onChangePostingDate = (event) => {
-        setPostingDate(event.target.value)
-    }
-
     const onChangeDeadline = (event) => {
         setDeadline(event.target.value);
-    }
-
-    const onChangeSkills = (event) => {
-        const values = event.target.value;
-        const lastItem = values[values.length - 1];
-        if (lastItem) {
-            values.pop();
-            const sameItem = values.find((value) => value === lastItem);
-            if (sameItem === undefined) {
-                values.push(lastItem);
-            }
-        }
-        setSkills(values);
     }
 
     const onChangeSalary = (event) => {
@@ -76,35 +60,60 @@ export default function CreateJob() {
         setDuration(event.target.value);
     }
 
+    const formatDate = (inputDate) => {
+        let date, month, year;
+
+        date = inputDate.getDate();
+        month = inputDate.getMonth() + 1;
+        year = inputDate.getFullYear();
+
+        date = date
+            .toString()
+            .padStart(2, '0');
+
+        month = month
+            .toString()
+            .padStart(2, '0');
+
+        return `${date}/${month}/${year}`;
+    }
+
+    const onSelectSkills = (selectedList, selectedItem) => {
+        setSkills(selectedList);
+    }
+
+    const onRemoveSkills = (selectedList, selectedItem) => {
+        var array = selectedList;
+        array.pop(selectedItem);
+        setSkills(array); 
+    }
+
     const onSubmit = (e) => {
         e.preventDefault();
 
         var ind = document.getElementById("jobtype");
-        var ind2 = document.getElementById("rating");
-        const newUser = {
+        const newJob = {
             title: title,
             name: name,
             email: email,
             applications: applications,
             positions: positions,
-            postingdate: postingDate,
-            deadline: deadline,
+            postingdate: formatDate(new Date()),
+            deadline: formatDate(new Date(deadline)),
             skills: skills,
             jobtype: ind.options[ind.selectedIndex].value,
             duration: duration,
             salary: salary,
-            rating: ind2.options[ind2.selectedIndex].value
         }
 
-        axios.post(`http://localhost:4000/jobs/${user._id}`, newUser)
-        .then(res => {
-            // console.log(res);
-            alert("Created job " + res.data.title);
-            history.push('/activejob');
-        })
-        .catch(function (error) {
-            // alert(error);
-        });
+        axios.post(`http://localhost:4000/jobs/${user._id}`, newJob)
+            .then(res => {
+                alert("Created job " + res.data.title);
+                history.push('/activejob');
+            })
+            .catch(function (error) {
+                alert(error);
+            });
     }
 
     return (
@@ -131,91 +140,83 @@ export default function CreateJob() {
                 </div>
 
                 <div className="form-group">
-                    <label>Title: </label>
+                    <label>Job Title*  : </label>
                     <input type="text"
                         className="form-control"
                         value={title}
                         onChange={onChangeTitle}
+                        required={true}
+                        placeholder={"enter job title"}
                     />
                 </div>
 
                 <div className="form-group">
-                    <label>Applications: </label>
-                    <input type="number" min={0}
-                        className="form-control"
-                        value={applications}
-                        onChange={onChangeApplications}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Positions: </label>
-                    <input type="number" min={0}
+                    <label>Positions*  : </label>
+                    <input type="number" min={1}
                         className="form-control"
                         value={positions}
                         onChange={onChangePositions}
+                        required={true}
+                        placeholder={"available openings"}
                     />
                 </div>
 
                 <div className="form-group">
-                    <label>Posting Date: </label>
-                    <input type="date"
+                    <label>Applications*  : </label>
+                    <input type="number" min={positions}
                         className="form-control"
-                        value={postingDate}
-                        onChange={onChangePostingDate}
+                        value={applications}
+                        onChange={onChangeApplications}
+                        required={true}
+                        placeholder={"max allowed applications"}
                     />
                 </div>
 
                 <div className="form-group">
-                    <label>Deadline: </label>
-                    <input type="date"
+                    <label>Deadline*  : </label>
+                    <input type="date" min={new Date().toISOString().split("T")[0]}
                         className="form-control"
                         value={deadline}
                         onChange={onChangeDeadline}
+                        required={true}
                     />
                 </div>
 
                 <div className="form-group">
-                    Skills: {JSON.stringify(skills)}
-                    <MultiSelect
-                        data={languages}
-                        onChange={onChangeSkills}
-                        value={skills}
-                        allowCustom={true}
-                    />
+                    <h4>Skills  : <Multiselect
+                        options={languagesObjectArr} // Options to display in the dropdown
+                        selectedValues={skills} // Preselected value to persist in dropdown
+                        onSelect={onSelectSkills} // Function will trigger on select event
+                        onRemove={onRemoveSkills} // Function will trigger on remove event
+                        displayValue="name" // Property name to display in the dropdown options
+                    /></h4>
                 </div>
 
                 <div className="form-group">
-                    <label>Salary: </label>
-                    <input type="number" step={1000} min={0}
+                    <label>Salary*  : </label>
+                    <input type="number" step={5000} min={0}
                         className="form-control"
                         value={salary}
                         onChange={onChangeSalary}
+                        required={true}
+                        placeholder={"salary per month"}
                     />
                 </div>
 
                 <div className="form-group">
-                    <label>Duration in Months : </label>
+                    <label>Duration in Months*  : </label>
                     <input type="number" min={1} max={6}
                         className="form-control"
                         value={duration}
                         onChange={onChangeDuration}
+                        required={true}
+                        placeholder={"enter duration"}
                     />
                 </div>
 
-                <h4>Rating</h4>
-                <select id="rating">
-                    <option value={0}>0</option>
-                    <option value={1}>1</option>
-                    <option value={2}>2</option>
-                    <option value={3} selected>3</option>
-                    <option value={4}>4</option>
-                    <option value={5}>5</option>
-                </select>
-                <br />
                 <h4>Job Type</h4>
-                <select id="jobtype">
-                    <option value="Full-Time" selected>Full-Time</option>
+                <select id="jobtype" defaultValue={"Full-Time"}>
+                    <option value="Full-Time">Full-Time</option>
                     <option value="Part-Time">Part-Time</option>
                     <option value="Work-From-Home">Work-From-Home</option>
                 </select>

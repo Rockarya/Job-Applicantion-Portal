@@ -5,9 +5,9 @@ import RNav from './RNav';
 
 export default function JobDetails() {
 
-    const [applications, setApplications] = useState();
-    const [positions, setPositions] = useState();
-    const [deadline, setDeadline] = useState();
+    const [applications, setApplications] = useState(1);
+    const [positions, setPositions] = useState(1);
+    const [deadline, setDeadline] = useState('');
     const params = useParams();
     const history = useHistory();
 
@@ -26,7 +26,10 @@ export default function JobDetails() {
             const res = await axios.get(`http://localhost:4000/jobs/${id}`);
             setApplications(res.data.applications);
             setPositions(res.data.positions);
-            setDeadline(res.data.deadline);
+
+            var from = res.data.deadline.split("/");
+            var deadlineDate = from[2].toString() + '-' + from[1].toString() + '-' + from[0].toString();
+            setDeadline(deadlineDate);
         }
         catch (err) {
             // alert(err);
@@ -45,25 +48,43 @@ export default function JobDetails() {
         setDeadline(event.target.value);
     }
 
+    const formatDate = (inputDate) => {
+        let date, month, year;
+
+        date = inputDate.getDate();
+        month = inputDate.getMonth() + 1;
+        year = inputDate.getFullYear();
+
+        date = date
+            .toString()
+            .padStart(2, '0');
+
+        month = month
+            .toString()
+            .padStart(2, '0');
+
+        return `${date}/${month}/${year}`;
+    }
+
     const onSubmit = (e) => {
         e.preventDefault();
 
         const newUser = {
             applications: applications,
             positions: positions,
-            deadline: deadline,
+            deadline: formatDate(new Date(deadline)),
         }
 
         console.log(newUser, 'newuser');
         const postdetails = async () => {
             axios.patch(`http://localhost:4000/jobs/${params.id}`, newUser)
-            .then(res => {
-                alert("Job Updated");
-                history.push('/activejob');
-            })
-            .catch(function (error) {
-                // alert(error)
-            })
+                .then(res => {
+                    alert("Job Updated");
+                    history.push('/activejob');
+                })
+                .catch(function (error) {
+                    // alert(error)
+                })
         };
         postdetails();
     }
@@ -90,35 +111,36 @@ export default function JobDetails() {
             <h3>Something wrong in this job? Update it!</h3>
             <form onSubmit={onSubmit}>
                 <div className="form-group">
-                    <label>Maximum Number of Applicants: </label>
-                    <input type="number" min={0}
-                        className="form-control"
-                        value={applications}
-                        onChange={onChangeApplications}
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Maximum Number of Positions: </label>
-                    <input type="number" min={0}
+                    <label>Positions*  : </label>
+                    <input type="number" min={1}
                         className="form-control"
                         value={positions}
                         onChange={onChangePositions}
+                        required={true}
+                        placeholder={"available openings"}
                     />
                 </div>
-                {/* <div className="form-group">
-                        <label>Current Deadline for Application: </label>
-                        <input type="text" readOnly
-                               className="form-control"
-                               value={showdeadline}
-                               />
-                    </div> */}
+
+                <div className="form-group">
+                    <label>Applications*  : </label>
+                    <input type="number" min={positions}
+                        className="form-control"
+                        value={applications}
+                        onChange={onChangeApplications}
+                        required={true}
+                        placeholder={"max allowed applications"}
+                    />
+                </div>
+
                 <div className="form-group">
                     <label>Deadline for Application: </label>
-                    <input type="date"
+                    <input type="date" min={new Date().toISOString().split("T")[0]}
                         className="form-control"
                         value={deadline}
                         onChange={onChangeDeadline}
+                        required={true}
                     />
+
                 </div>
                 <div className="form-group">
                     <input type="submit" value="Update" className="btn btn-primary" />

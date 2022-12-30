@@ -35,9 +35,9 @@ export default function ADashboard() {
             axios.get('http://localhost:4000/jobs').then(response => {
                 setJobParams(response.data, foundUser._id);
             })
-            .catch(function (error) {
-                console.log(error);
-            })
+                .catch(function (error) {
+                    console.log(error);
+                })
         }
     }, []);
 
@@ -67,50 +67,39 @@ export default function ADashboard() {
         setJobs(jobParamsArray);
     }
 
-    // Note that this is sorting only at front-end
-    const sortSalary = () => {
+    const sortColumn = (event, column_name) => {
         var array = jobs;
-        var flag = salaryTitle;
-        array.sort(function (a, b) {
-            if (a.salary !== undefined && b.salary !== undefined) {
-                return (1 - flag * 2) * (new Number(a.salary) - new Number(b.salary));
-            }
-            else {
-                return 1;
-            }
-        });
-        setJobs(array);
-        setSalaryTitle(!salaryTitle)
-    }
 
-    const sortDuration = () => {
-        var array = jobs;
-        var flag = durationTitle;
-        array.sort(function (a, b) {
-            if (a.duration !== undefined && b.duration !== undefined) {
-                return (1 - flag * 2) * (new Number(a.duration) - new Number(b.duration));
-            }
-            else {
-                return 1;
-            }
-        });
-        setJobs(array);
-        setDurationTitle(!durationTitle);
-    }
+        if (column_name === 'salary') {
+            var flag = salaryTitle;
+        }
+        else if (column_name === 'duration') {
+            var flag = durationTitle;
+        }
+        else if (column_name === 'rating') {
+            var flag = ratingTitle;
+        }
 
-    const sortRating = () => {
-        var array = jobs;
-        var flag = ratingTitle;
         array.sort(function (a, b) {
-            if (a.rating !== undefined && b.rating !== undefined) {
-                return (1 - flag * 2) * (new Number(a.rating) - new Number(b.rating));
+            if (a[column_name] !== undefined && b[column_name] !== undefined) {
+                return (1 - flag * 2) * (new Number(a[column_name]) - new Number(b[column_name]));
             }
             else {
                 return 1;
             }
         });
+
+        if (column_name === 'salary') {
+            setSalaryTitle(!salaryTitle);
+        }
+        else if (column_name === 'duration') {
+            setDurationTitle(!durationTitle);
+        }
+        else if (column_name === 'rating') {
+            setRatingTitle(!ratingTitle);
+        }
+
         setJobs(array);
-        setRatingTitle(!ratingTitle);
     }
 
     const onApply = (e, jobID, buttonText) => {
@@ -148,9 +137,9 @@ export default function ADashboard() {
                                     <TableCell> Positions </TableCell>
                                     <TableCell> Skills Needed </TableCell>
                                     <TableCell> Job Type </TableCell>
-                                    <TableCell> Salary<Button onClick={sortSalary}>{salaryTitle ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}</Button></TableCell>
-                                    <TableCell> Duration<Button onClick={sortDuration}>{durationTitle ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}</Button></TableCell>
-                                    <TableCell> Rating<Button onClick={sortRating}>{ratingTitle ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}</Button></TableCell>
+                                    <TableCell> Salary<Button onClick={event => sortColumn(event, "salary")}>{salaryTitle ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}</Button></TableCell>
+                                    <TableCell> Duration<Button onClick={event => sortColumn(event, "duration")}>{durationTitle ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}</Button></TableCell>
+                                    <TableCell> Rating<Button onClick={event => sortColumn(event, "rating")}>{ratingTitle ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}</Button></TableCell>
                                     <TableCell> Date of Posting </TableCell>
                                     <TableCell> Deadline </TableCell>
                                     <TableCell> Apply for this job? </TableCell>
@@ -166,14 +155,14 @@ export default function ADashboard() {
                                             <TableCell>{val.email}</TableCell>
                                             <TableCell>{val.applications}</TableCell>
                                             <TableCell>{val.positions}</TableCell>
-                                            <TableCell>{val.skills}</TableCell>
+                                            <TableCell>{val.skills.map((skill) => skill.name).join(', ')}</TableCell>
                                             <TableCell>{val.jobtype}</TableCell>
                                             <TableCell>{val.salary}</TableCell>
                                             <TableCell>{val.duration}</TableCell>
                                             <TableCell>{val.rating}</TableCell>
                                             <TableCell>{val.postingdate}</TableCell>
                                             <TableCell>{val.deadline}</TableCell>
-                                            <TableCell><Button onClick={event => onApply(event, val._id, val.buttonText)} variant="contained" color={val.buttonText === 'Apply'? 'primary':'secondary'} aria-readonly={val.buttonText === "Full" ? true : false} disabled={val.buttonText === "Applied" ? true : false}>{val.buttonText}</Button></TableCell>
+                                            <TableCell><Button onClick={event => onApply(event, val._id, val.buttonText)} variant="contained" color={val.buttonText === 'Apply' ? 'primary' : 'secondary'} aria-readonly={val.buttonText === "Full" ? true : false} disabled={val.buttonText === "Applied" ? true : false}>{val.buttonText}</Button></TableCell>
                                         </TableRow>
                                     ))
                                 }

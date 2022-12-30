@@ -59,7 +59,7 @@ export default function ActiveJob() {
                         <th scope="col">Title</th>
                         <th scope="col">Date of Posting</th>
                         <th scope="col">Deadline</th>
-                        <th scope="col">Number of Applicants</th>
+                        <th scope="col">Number of Applications</th>
                         <th scope="col">Max Number of Positions</th>
                         <th scope="col">Update job?</th>
                         <th scope="col">Delete this job?</th>
