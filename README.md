@@ -1,6 +1,5 @@
 # BASIC OVERVIEW:
 
-
 Job Application Portal is a web application build using REST principles build using MERN stack:
 
 ● React.js for Frontend
@@ -128,4 +127,4 @@ The application can be divided into 3 components:
 
 
 # ENABLING SIGN IN/UP USING GOOGLE:
-● Use this link (https://support.google.com/workspacemigrate/answer/9222992?hl=en) to get the OAuth Web Client ID and paste this ID in the file: OAuthWebClientID.js file located in ./frontend/src/Components folder.
+● Use this [link](https://support.google.com/workspacemigrate/answer/9222992?hl=en) to get the OAuth Web Client ID and paste this ID in the file: OAuthWebClientID.js file located in ./frontend/src/Components folder.
