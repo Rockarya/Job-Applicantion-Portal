@@ -40,7 +40,7 @@ export default function SOP() {
             history.push(`/adashboard`);
         }
         catch (err) {
-            // console.log(err);
+            console.log(err);
         }
     }
 

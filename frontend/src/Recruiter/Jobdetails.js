@@ -32,7 +32,7 @@ export default function JobDetails() {
             setDeadline(deadlineDate);
         }
         catch (err) {
-            // alert(err);
+            console.log(err);
         }
     };
 
@@ -66,7 +66,7 @@ export default function JobDetails() {
         return `${date}/${month}/${year}`;
     }
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
         const newUser = {
@@ -75,33 +75,27 @@ export default function JobDetails() {
             deadline: formatDate(new Date(deadline)),
         }
 
-        console.log(newUser, 'newuser');
-        const postdetails = async () => {
-            axios.patch(`http://localhost:4000/jobs/${params.id}`, newUser)
-                .then(res => {
-                    alert("Job Updated");
-                    history.push('/activejob');
-                })
-                .catch(function (error) {
-                    // alert(error)
-                })
-        };
-        postdetails();
+        try {
+            await axios.patch(`http://localhost:4000/jobs/${params.id}`, newUser)
+            alert("Job Updated");
+            history.push('/activejob');
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
-    const onDelete = (e) => {
+    const onDelete = async (e) => {
         e.preventDefault();
-        const deletejob = async () => {
-            try {
-                await axios.delete(`http://localhost:4000/jobs/${params.id}`);
-                alert("Job Deleted");
-                history.push('/activejob');
-            }
-            catch (err) {
-                // alert(err);
-            }
+        
+        try {
+            await axios.delete(`http://localhost:4000/jobs/${params.id}`);
+            alert("Job Deleted");
+            history.push('/activejob');
         }
-        deletejob();
+        catch (err) {
+            console.log(err);
+        }
     }
 
     return (

@@ -51,47 +51,50 @@ export default function AcceptedApplicants() {
         var params_arr = [];
         var user_map = {};
 
-        await axios.get('http://localhost:4000/users')
-            .then(res => {
-                const users_arr = res.data;
-                for (let i = 0; i < users_arr.length; i++) {
-                    user_map[users_arr[i]._id] = {name : users_arr[i].name, rating : users_arr[i].rating};
-                }
-            })
+        try {
+            const response = await axios.get('http://localhost:4000/users')
+            const users_arr = response.data;
+            for (let i = 0; i < users_arr.length; i++) {
+                user_map[users_arr[i]._id] = { name: users_arr[i].name, rating: users_arr[i].rating };
+            }
 
-        await axios.get(`http://localhost:4000/jobs/${recruiterID}/recruiters/alljobs`)
-            .then(res => {
-                var jobs_arr = res.data;
-                var key = 0;  //we can't assign either job or applicant ID here, because both of them can repeat
-                for (let i = 0; i < jobs_arr.length; i++) {
-                    for (let j = 0; j < jobs_arr[i]["acceptedstatus"].length; j++) {
-                        var applicantID = jobs_arr[i]["acceptedstatus"][j];
-                        var params = {
-                            "_id" : key,
-                            "applicantID": applicantID,
-                            "date": formatDate(new Date()),
-                            "name": user_map[applicantID].name,
-                            "rating": user_map[applicantID].rating,
-                            "jobtype": jobs_arr[i].jobtype,
-                            "title": jobs_arr[i].title,
-                        }
-                        key += 1;
-                        params_arr.push(params);
+            const res = await axios.get(`http://localhost:4000/jobs/${recruiterID}/recruiters/alljobs`)
+            var jobs_arr = res.data;
+            var key = 0;  //we can't assign either job or applicant ID here, because both of them can repeat
+            for (let i = 0; i < jobs_arr.length; i++) {
+                for (let j = 0; j < jobs_arr[i]["acceptedstatus"].length; j++) {
+                    var applicantID = jobs_arr[i]["acceptedstatus"][j];
+                    var params = {
+                        "_id": key,
+                        "applicantID": applicantID,
+                        "date": formatDate(new Date()),
+                        "name": user_map[applicantID].name,
+                        "rating": user_map[applicantID].rating,
+                        "jobtype": jobs_arr[i].jobtype,
+                        "title": jobs_arr[i].title,
                     }
+                    key += 1;
+                    params_arr.push(params);
                 }
-            })
-            .catch(function (error) {
-                //  console.log(error);
-            })
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
 
         setApplicants(params_arr);
     };
 
     const onChangeRating = async (event, newRating, params) => {
         event.preventDefault();
-        axios.patch(`http://localhost:4000/users/rating/${params.applicantID}`,{rating: newRating});
-        alert(`Rated applicant ${params.name} with ${newRating} stars`);
-        window.location.reload();
+        try {
+            await axios.patch(`http://localhost:4000/users/rating/${params.applicantID}`, { rating: newRating });
+            alert(`Rated applicant ${params.name} with ${newRating} stars`);
+            window.location.reload();
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     const sortRating = () => {
@@ -172,7 +175,7 @@ export default function AcceptedApplicants() {
                         <td>{applicants.map(vals => (<h2 key={vals._id}> {vals.date} </h2>))}</td>
                         <td>{applicants.map(vals => (<h2 key={vals._id}> {vals.name} </h2>))}</td>
                         <td>{applicants.map(vals => (<h2 key={vals._id}> {vals.jobtype} </h2>))}</td>
-                        <td>{applicants.map(vals => (<h2 key={vals._id}> <Rating name="simple-controlled" value={vals.rating} onChange={(event, newValue) => onChangeRating(event, newValue, vals)}/> </h2>))}</td>
+                        <td>{applicants.map(vals => (<h2 key={vals._id}> <Rating name="simple-controlled" value={vals.rating} onChange={(event, newValue) => onChangeRating(event, newValue, vals)} /> </h2>))}</td>
                     </tr>
                 </tbody>
             </table>

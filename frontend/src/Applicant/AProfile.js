@@ -57,6 +57,22 @@ export default function AProfile() {
     //     })
     // }
 
+    const getUserDetails = async (userID) => {
+        try {
+            const res = await axios.get(`http://localhost:4000/users/${userID}`)
+            setName(res.data.name);
+            setEmail(res.data.email);
+            setEducation(res.data.education);
+            setSkills(res.data.skills);
+            setRating(res.data.rating);
+            setProfileImgURL(res.data.profileImgURL);
+            setResumeURL(res.data.resumeURL);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
     useEffect(() => {
         const loggedInUser = localStorage.getItem("user");
         if (!loggedInUser) {
@@ -65,23 +81,10 @@ export default function AProfile() {
         else {
             const foundUser = JSON.parse(loggedInUser);
             setUser(foundUser);
-
             // here we have 2 choices, either take the data from the local storage(as we are adding updated data into it) or fetch data from API. 
             // Fetching the data is better, because in case when i update the database from backend then those changes should be reflected on frontend by refreshing. 
             // The above thing won't be possible if we use local storage. Storing values in local storage is useful, if the data doesn't change for long time. 
-            axios.get(`http://localhost:4000/users/${foundUser._id}`)
-                .then(res => {
-                    setName(res.data.name);
-                    setEmail(res.data.email);
-                    setEducation(res.data.education);
-                    setSkills(res.data.skills);
-                    setRating(res.data.rating);
-                    setProfileImgURL(res.data.profileImgURL);
-                    setResumeURL(res.data.resumeURL);
-                })
-                .catch(function (error) {
-                    // alert(error);
-                });
+            getUserDetails(foundUser._id);
         }
     }, []);
 
@@ -121,7 +124,7 @@ export default function AProfile() {
         setSkills(selectedList);
     }
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
         const updatedUser = {
@@ -133,21 +136,21 @@ export default function AProfile() {
             resumeURL: resumeURL
         }
 
-        axios.patch(`http://localhost:4000/users/applicant/${user._id}`, updatedUser)
-            .then((res) => {
+        try {
+            await axios.patch(`http://localhost:4000/users/applicant/${user._id}`, updatedUser)
 
-                // HERE the only reason to update the local storage is to update the email id if profile gets updated. Meanwhile we are also adding new fields in local storage which may not be needed actually
-                var profile = JSON.parse(localStorage.getItem('user'));
-                Object.keys(updatedUser).forEach((key) => {
-                    profile[key] = updatedUser[key];
-                });
-                localStorage.setItem('user', JSON.stringify(profile));
-                alert("Profile Updated");
-                history.push('/applicant');
-            })
-            .catch(function (error) {
-                // alert(error);
+            // HERE the only reason to update the local storage is to update the email id if profile gets updated. Meanwhile we are also adding new fields in local storage which may not be needed actually
+            var profile = JSON.parse(localStorage.getItem('user'));
+            Object.keys(updatedUser).forEach((key) => {
+                profile[key] = updatedUser[key];
             });
+            localStorage.setItem('user', JSON.stringify(profile));
+            alert("Profile Updated");
+            history.push('/applicant');
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     return (

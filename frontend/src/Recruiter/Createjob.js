@@ -17,10 +17,10 @@ export default function CreateJob() {
     const [salary, setSalary] = useState();
     const [user, setUser] = useState();
     const history = useHistory();
-    var languagesArr = ['C','CSS','C++','C#','Dart','Go','HTML','Java','Javascript','Kotlin','MATLAB','Perl','PHP','Python','R','Ruby','Rust','Scala','Swift','SQL'];
+    var languagesArr = ['C', 'CSS', 'C++', 'C#', 'Dart', 'Go', 'HTML', 'Java', 'Javascript', 'Kotlin', 'MATLAB', 'Perl', 'PHP', 'Python', 'R', 'Ruby', 'Rust', 'Scala', 'Swift', 'SQL'];
     var languagesObjectArr = [];
-    for(let i=0;i<languagesArr.length;i++) {
-        languagesObjectArr.push({id: i+1, name: languagesArr[i]});
+    for (let i = 0; i < languagesArr.length; i++) {
+        languagesObjectArr.push({ id: i + 1, name: languagesArr[i] });
     }
 
     useEffect(() => {
@@ -85,10 +85,10 @@ export default function CreateJob() {
     const onRemoveSkills = (selectedList, selectedItem) => {
         var array = selectedList;
         array.pop(selectedItem);
-        setSkills(array); 
+        setSkills(array);
     }
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
         var ind = document.getElementById("jobtype");
@@ -106,14 +106,14 @@ export default function CreateJob() {
             salary: salary,
         }
 
-        axios.post(`http://localhost:4000/jobs/${user._id}`, newJob)
-            .then(res => {
-                alert("Created job " + res.data.title);
-                history.push('/activejob');
-            })
-            .catch(function (error) {
-                alert(error);
-            });
+        try {
+            const res = await axios.post(`http://localhost:4000/jobs/${user._id}`, newJob)
+            alert("Created job " + res.data.title);
+            history.push('/activejob');
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     return (

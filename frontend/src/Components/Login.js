@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useHistory } from "react-router-dom";
 import { GoogleLogin } from 'react-google-login';
 import { gapi } from 'gapi-script';
-import clientId  from './OAuthWebClientID';
+import clientId from './OAuthWebClientID';
 
 export default function Login() {
 
@@ -35,9 +35,10 @@ export default function Login() {
         setPassword(event.target.value);
     }
 
-    const onSuccess = (res) => {
+    const onSuccess = async (res) => {
         // console.log('success:', res);
-        axios.post('http://localhost:4000/api/user/gsignin', { email: res.profileObj.email }).then(response => {
+        try {
+            const response = await axios.post('http://localhost:4000/api/user/gsignin', { email: res.profileObj.email })
             if (response.status === 200) {
                 setEmail(res.profileObj.email);
             }
@@ -46,50 +47,49 @@ export default function Login() {
                 localStorage.setItem("gSignIn", JSON.stringify(res.profileObj));
                 history.push('/register');
             }
-        })
-            .catch(function (error) {
-                console.log(error);
-            })
+        }
+        catch (err) {
+            console.log(err);
+        }
     };
 
     const onFailure = (err) => {
         // console.log('failed:', err);
     };
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
+
         const newUser = {
             email: email,
             password: password
         }
-        const loginhere = async () => {
-            try {
-                const res = await axios.post('http://localhost:4000/api/user/login', newUser);
-                if (res.status === 200) {
-                    try {
-                        localStorage.setItem("user", JSON.stringify(res.data));
-                        alert("Logged In as " + res.data.name)
-                        history.push(`/${res.data.role}`);
-                    }
-                    catch (err) {
-                        // alert(err)
-                    }
+
+        try {
+            const res = await axios.post('http://localhost:4000/api/user/login', newUser);
+            if (res.status === 200) {
+                try {
+                    localStorage.setItem("user", JSON.stringify(res.data));
+                    alert("Logged In as " + res.data.name)
+                    history.push(`/${res.data.role}`);
                 }
-                if (res.status === 204) {
-                    alert("Invalid Email!");
-                }
-                if (res.status === 205) {
-                    alert("Email not found!");
-                }
-                if (res.status === 206) {
-                    alert("Incorrect Password");
+                catch (err) {
+                    // alert(err)
                 }
             }
-            catch (err) {
-                //  alert(err);
+            if (res.status === 204) {
+                alert("Invalid Email!");
             }
-        };
-        loginhere();
+            if (res.status === 205) {
+                alert("Email not found!");
+            }
+            if (res.status === 206) {
+                alert("Incorrect Password");
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     return (
@@ -121,7 +121,7 @@ export default function Login() {
                 <h5>Not registered yet!</h5>
                 <a href="http://localhost:3000/register">Register Here</a>
             </form>
-            <br/>
+            <br />
             <GoogleLogin
                 clientId={clientId}
                 buttonText="Sign in with Google"

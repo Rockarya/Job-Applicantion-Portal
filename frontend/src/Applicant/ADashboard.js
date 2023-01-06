@@ -24,6 +24,16 @@ export default function ADashboard() {
     const [user, setUser] = useState();
     const history = useHistory();
 
+    const getJobs = async (userID) => {
+        try {
+            const response = await axios.get('http://localhost:4000/jobs')
+            setJobParams(response.data, userID);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
     useEffect(() => {
         const loggedInUser = localStorage.getItem("user");
         if (!loggedInUser) {
@@ -32,12 +42,7 @@ export default function ADashboard() {
         else {
             const foundUser = JSON.parse(loggedInUser);
             setUser(foundUser);
-            axios.get('http://localhost:4000/jobs').then(response => {
-                setJobParams(response.data, foundUser._id);
-            })
-                .catch(function (error) {
-                    console.log(error);
-                })
+            getJobs(foundUser._id);
         }
     }, []);
 
@@ -102,19 +107,22 @@ export default function ADashboard() {
         setJobs(array);
     }
 
-    const onApply = (e, jobID, buttonText) => {
+    const onApply = async (e, jobID, buttonText) => {
         e.preventDefault();
 
         if (buttonText === "Apply") {
-            axios.get(`http://localhost:4000/jobs/${user._id}/applicants/alljobs`)
-                .then((res) => {
-                    if (res.data.length >= 10) {
-                        alert("It seems like that you have exceeded the limit to apply for open jobs\nYou can't apply anymore :-(");
-                    }
-                    else {
-                        history.push(`/SOP/${jobID}`);
-                    }
-                });
+            try {
+                const res = await axios.get(`http://localhost:4000/jobs/${user._id}/applicants/alljobs`)
+                if (res.data.length >= 10) {
+                    alert("It seems like that you have exceeded the limit to apply for open jobs\nYou can't apply anymore :-(");
+                }
+                else {
+                    history.push(`/SOP/${jobID}`);
+                }
+            }
+            catch (err) {
+                console.log(err);
+            }
         }
     };
 

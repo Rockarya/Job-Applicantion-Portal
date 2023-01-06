@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useHistory, useParams } from "react-router-dom";
 import { GoogleLogin } from 'react-google-login';
 import { gapi } from 'gapi-script';
-import clientId  from './OAuthWebClientID';
+import clientId from './OAuthWebClientID';
 
 export default function Register() {
 
@@ -60,7 +60,7 @@ export default function Register() {
         // console.log('failed:', err);
     };
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
         var ind = document.getElementById("role");
@@ -72,27 +72,23 @@ export default function Register() {
             profileImgURL: profileImgURL
         }
 
-        console.log(newUser, 'check');
-        const registerhere = async () => {
-            try {
-                const res = await axios.post('http://localhost:4000/api/user/register', newUser);
-                if (res.status === 200) {
-                    alert("Created user " + res.data.name);
-                    localStorage.setItem("user", JSON.stringify(res.data));
-                    history.push(`/${res.data.role}`);
-                }
-                if (res.status === 205) {
-                    alert("Ensure that email id is valid\nName,Email and Password must be atleast 4 characters long");
-                }
-                if (res.status === 204) {
-                    alert("Email already exists!");
-                }
+        try {
+            const res = await axios.post('http://localhost:4000/api/user/register', newUser);
+            if (res.status === 200) {
+                alert("Created user " + res.data.name);
+                localStorage.setItem("user", JSON.stringify(res.data));
+                history.push(`/${res.data.role}`);
             }
-            catch (err) {
-                //  alert(err);
+            if (res.status === 205) {
+                alert("Ensure that email id is valid\nName,Email and Password must be atleast 4 characters long");
             }
-        };
-        registerhere();
+            if (res.status === 204) {
+                alert("Email already exists!");
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     return (
@@ -141,7 +137,7 @@ export default function Register() {
                 <h5>Already registered! <a href="http://localhost:3000/login">Login</a></h5>
             </form>
 
-            <br/>
+            <br />
             <GoogleLogin
                 clientId={clientId}
                 buttonText="Sign Up with Google"

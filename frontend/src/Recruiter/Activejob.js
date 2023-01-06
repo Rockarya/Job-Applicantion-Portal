@@ -23,29 +23,32 @@ export default function ActiveJob() {
     }, []);
 
     const fetchJobs = async (id) => {
-        const data = await fetch(`http://localhost:4000/jobs/${id}/recruiters/alljobs`);
-        const json_data = await data.json();
-        setJobs(json_data);
+        try {
+            const data = await fetch(`http://localhost:4000/jobs/${id}/recruiters/alljobs`);
+            const json_data = await data.json();
+            setJobs(json_data);
+        }
+        catch (err) {
+            console.log(err);
+        }
     };
 
     const onUpdate = (event, jobID) => {
         event.preventDefault();
-        history.push(`/edit_delete_job/${jobID}`);   
+        history.push(`/edit_delete_job/${jobID}`);
     }
 
-    const onDelete = (event, jobID) => {
+    const onDelete = async (event, jobID) => {
         event.preventDefault();
-        const deletejob = async () => {
-            try {
-                await axios.delete(`http://localhost:4000/jobs/${jobID}`);
-                alert("Job Deleted");
-                window.location.reload()
-            }
-            catch (err) {
-                // alert(err);
-            }
+
+        try {
+            await axios.delete(`http://localhost:4000/jobs/${jobID}`);
+            alert("Job Deleted");
+            window.location.reload()
         }
-        deletejob();
+        catch (err) {
+            console.log(err);
+        }
     }
 
     return (
@@ -72,8 +75,8 @@ export default function ActiveJob() {
                         <td>{jobs.map(vals => (<h2 key={vals._id}> {vals.deadline} </h2>))}</td>
                         <td>{jobs.map(vals => (<h2 key={vals._id}> {vals.applications} </h2>))}</td>
                         <td>{jobs.map(vals => (<h2 key={vals._id}> {vals.positions} </h2>))}</td>
-                        <td>{jobs.map(vals => (<h2 key={vals._id}> {<Button onClick={event => onUpdate(event,vals._id)}>Update</Button>} </h2>))}</td>
-                        <td>{jobs.map(vals => (<h2 key={vals._id}> {<Button onClick={event => onDelete(event,vals._id)}>Delete</Button>} </h2>))}</td>
+                        <td>{jobs.map(vals => (<h2 key={vals._id}> {<Button onClick={event => onUpdate(event, vals._id)}>Update</Button>} </h2>))}</td>
+                        <td>{jobs.map(vals => (<h2 key={vals._id}> {<Button onClick={event => onDelete(event, vals._id)}>Delete</Button>} </h2>))}</td>
                     </tr>
                 </tbody>
             </table>

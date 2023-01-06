@@ -17,7 +17,6 @@ import './Recruiter.css';
 import RNav from './RNav';
 
 
-
 export default function ApplicantDetails() {
 
     const [applicants, setApplicants] = useState([]);
@@ -26,6 +25,20 @@ export default function ApplicantDetails() {
     const history = useHistory();
     const params = useParams();
 
+    const getAllJobs = async () => {
+        try {
+            const res = await axios.get(`http://localhost:4000/users/alljobs/${params.id}`)
+
+            // getting details about the applied, shortlisted, accepted applicants
+            const response = await axios.get(`http://localhost:4000/jobs/${params.id}`)
+
+            settingParams(res.data, response.data);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
     useEffect(() => {
         const loggedInUser = localStorage.getItem("user");
         if (!loggedInUser) {
@@ -33,21 +46,7 @@ export default function ApplicantDetails() {
         }
         else {
             const foundUser = JSON.parse(loggedInUser);
-
-            axios.get(`http://localhost:4000/users/alljobs/${params.id}`)
-                .then(res => {
-                    // getting details about the applied, shortlisted, accepted applicants
-                    axios.get(`http://localhost:4000/jobs/${params.id}`)
-                        .then(response => {
-                            settingParams(res.data, response.data);
-                        })
-                        .catch(function (error) {
-                            //  console.log(error);
-                        })
-                })
-                .catch(function (error) {
-                    //  console.log(error);
-                })
+            getAllJobs();
         }
     }, []);
 
@@ -67,7 +66,7 @@ export default function ApplicantDetails() {
                 "sop": "",
                 "status": "",
                 "reject": "Reject",
-                "resumeURL" : applicantData[i].resumeURL
+                "resumeURL": applicantData[i].resumeURL
             };
 
             // setting SOP of the applicant 
@@ -136,7 +135,7 @@ export default function ApplicantDetails() {
                 window.location.reload()
             }
             catch (err) {
-                // console.log(err);
+                console.log(err);
             }
         }
         else if (applicantStatus === "Accept") {
@@ -146,7 +145,7 @@ export default function ApplicantDetails() {
                 window.location.reload()
             }
             catch (err) {
-                // console.log(err);
+                console.log(err);
             }
         }
     }
@@ -159,11 +158,9 @@ export default function ApplicantDetails() {
             window.location.reload()
         }
         catch (err) {
-            // console.log(err);
+            console.log(err);
         }
     }
-
-    console.log(applicants, 'appli');
 
     return (
         <div>
@@ -211,9 +208,9 @@ export default function ApplicantDetails() {
                                                     </table>
                                                     : null
                                             }</TableCell>
-                                            <TableCell><Rating name="simple-controlled" value={val.rating} readOnly={true}/></TableCell>
+                                            <TableCell><Rating name="simple-controlled" value={val.rating} readOnly={true} /></TableCell>
                                             <TableCell>{val.sop}</TableCell>
-                                            <TableCell><p><a href={val.resumeURL} target='_blank'>{val.resumeURL?'Download':'Not Uploaded'}</a></p></TableCell>
+                                            <TableCell><p><a href={val.resumeURL} target='_blank'>{val.resumeURL ? 'Download' : 'Not Uploaded'}</a></p></TableCell>
                                             <TableCell><IconButton disabled={val.status === "Accepted" ? true : false} onClick={event => onClickStatus(event, val._id, val.status)}>{val.status}</IconButton></TableCell>
                                             <TableCell><IconButton onClick={event => onClickReject(event, val._id)}>{val.reject}</IconButton></TableCell>
                                         </TableRow>

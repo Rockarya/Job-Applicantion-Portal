@@ -21,9 +21,14 @@ export default function MyApplications() {
     }, []);
 
     const fetchUsers = async (id) => {
-        const data = await fetch(`http://localhost:4000/jobs/${id}/applicants/alljobs`);
-        const json_data = await data.json();
-        settingJobParams(json_data);
+        try {
+            const data = await fetch(`http://localhost:4000/jobs/${id}/applicants/alljobs`);
+            const json_data = await data.json();
+            settingJobParams(json_data);
+        } 
+        catch (err) {
+            console.log(err);
+        }
     };
 
     const settingJobParams = (data) => {
@@ -47,13 +52,17 @@ export default function MyApplications() {
         setjobs(jobParams);
     };
 
-    const onChangeRating = (event, newRating, params) => {
+    const onChangeRating = async (event, newRating, params) => {
         event.preventDefault();
-        axios.patch(`http://localhost:4000/jobs/rating/${params._id}`,{rating: newRating});
-        alert(`Rated Job ${params.title} with ${newRating} stars`);
-        window.location.reload();
+        try {
+            await axios.patch(`http://localhost:4000/jobs/rating/${params._id}`,{rating: newRating});
+            alert(`Rated Job ${params.title} with ${newRating} stars`);
+            window.location.reload();
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
-
 
     return (
         <div className="table-responsive">

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import RNav from './RNav';
-import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 
 export default function RProfile() {
@@ -21,10 +20,10 @@ export default function RProfile() {
         }
         else {
             const foundUser = JSON.parse(loggedInUser);
-            if(foundUser.name){setName(foundUser.name);}
-            if(foundUser.email){setEmail(foundUser.email);}
-            if(foundUser.contact){setContact(foundUser.contact);}
-            if(foundUser.bio){setBio(foundUser.bio);}
+            if (foundUser.name) { setName(foundUser.name); }
+            if (foundUser.email) { setEmail(foundUser.email); }
+            if (foundUser.contact) { setContact(foundUser.contact); }
+            if (foundUser.bio) { setBio(foundUser.bio); }
             setUser(foundUser);
         }
     }, []);
@@ -45,7 +44,7 @@ export default function RProfile() {
         setBio(event.target.value);
     }
 
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
 
         const newUser = {
@@ -55,7 +54,8 @@ export default function RProfile() {
             bio: bio
         }
 
-        axios.patch(`http://localhost:4000/users/recruiter/${user._id}`, newUser).then((res) => {
+        try {
+            await axios.patch(`http://localhost:4000/users/recruiter/${user._id}`, newUser)
             var profile = JSON.parse(localStorage.getItem('user'));
             Object.keys(newUser).forEach((key) => {
                 profile[key] = newUser[key];
@@ -63,10 +63,10 @@ export default function RProfile() {
             localStorage.setItem('user', JSON.stringify(profile));
             alert("Profile Updated");
             history.push('/recruiter');
-        })
-        .catch(function (error) {
-            // alert(error);
-        });
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     return (
